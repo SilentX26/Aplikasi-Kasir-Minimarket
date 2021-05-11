@@ -143,3 +143,8 @@ function callJsFiles($val, $debug = FALSE)
     
     return $result;
 }
+
+function invalid_validation($name)
+{
+    return !empty(form_error($name)) ? 'is-invalid' : '';
+}

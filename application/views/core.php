@@ -26,10 +26,15 @@
     <link href="<?= base_url('assets/css/vendor/animate/animate.min.css') ?>" rel="stylesheet">
 
     <!-- CSS Custom -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/custom.css?v=' . time()) ?>">
 </head>
 
 <body id="page-top">
+    <div class="preloader">
+        <div class="loader">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -40,7 +45,7 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url() ?>">
                 <div class="sidebar-brand-text mx-3 d-block">
-                    <img src="<?= base_url("assets/img/{$webConfig->logo}") ?>" style="height: 2.5rem" class="d-none d-md-block">
+                    <img src="<?= base_url("assets/img/{$webConfig->logo}") ?>" style="height: 3rem" class="d-none d-md-block">
                     <img src="<?= base_url("assets/img/{$webConfig->icon}") ?>" style="height: 2.5rem" class="d-block d-md-none">
                 </div>
             </a>
@@ -53,12 +58,22 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
-                <a class="nav-link" href="<?= base_url() ?>">
-                    <i class="fas fa-fw fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
+            <? if(isset($user)): ?>
+                <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
+                    <a class="nav-link" href="<?= base_url() ?>">
+                        <i class="fas fa-fw fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+            <? else: ?>
+                <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
+                    <a class="nav-link" href="<?= base_url('auth/login') ?>">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+            <? endif ?>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -83,6 +98,9 @@
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
+
+                    <!-- Topbar Waktu Terkini -->
+                    <h5 class="ml-3 mr-auto d-none d-md-block my-2"><?= core_waktu_terkini() ?></h5>
 
                     <? if(isset($user)): ?>
                         <!-- Topbar Navbar -->
@@ -129,7 +147,7 @@
                                 <!-- Dropdown - User Information -->
                                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                     aria-labelledby="userDropdown">
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="<?= base_url('pengaturan-akun') ?>">
                                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Pengaturan Akun
                                     </a>
@@ -212,9 +230,11 @@
 
     <!-- Core plugin JavaScript-->
     <script src="<?= base_url('assets/js/vendor/jquery-easing/jquery.easing.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/vendor/bootstrap-notify/bootstrap-notify.min.js') ?>"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="<?= base_url('assets/js/sb-admin-2.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/main.js?v=' . time()) ?>"></script>
 
     <!-- Page level plugins -->
     <script src="<?= base_url('assets/js/vendor/chart.js/Chart.min.js') ?>"></script>
@@ -222,6 +242,10 @@
     <!-- Page level custom scripts -->
     <script src="<?= base_url('assets/js/demo/chart-area-demo.js') ?>"></script>
     <script src="<?= base_url('assets/js/demo/chart-pie-demo.js') ?>"></script>
+
+    <? if(isset($_SESSION['alertResult'])): ?>
+        <script>show_result("<?= $_SESSION['alertResult']['status'] ?>", "<?= $_SESSION['alertResult']['message'] ?>");</script>
+    <? endif ?>
 
 </body>
 

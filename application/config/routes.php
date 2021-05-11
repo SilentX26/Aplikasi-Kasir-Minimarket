@@ -53,5 +53,11 @@ $route['default_controller'] = 'Auth/index';
 $route['404_override'] = 'Err/index';
 $route['translate_uri_dashes'] = FALSE;
 
-/* #ERROR ROUTE */
+/* # ERROR ROUTE */
 $route['error/(:any)'] = 'Err/index/$1';
+
+/*
+    @ User Features
+*/
+/* # Pengaturan Akun */
+$route['pengaturan-akun'] = 'Auth/pengaturan';

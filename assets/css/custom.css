@@ -24,3 +24,5 @@
 
 body[class=sidebar-toggled] .sidebar-brand .d-md-block { display: none!important; }
 body[class=sidebar-toggled] .sidebar-brand .d-md-none { display: block!important; }
+
+.form-group label { font-weight: 620; }
