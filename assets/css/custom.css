@@ -1,0 +1,26 @@
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: #f9fbfd;
+    opacity: 0.8;
+}
+.loader {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 45%;
+}
+.loader div {
+    height: 3.5rem!important;
+    width: 3.5rem!important;
+}
+@media(max-width: 576px) {
+    .loader { left: 44%; }   
+}
+
+body[class=sidebar-toggled] .sidebar-brand .d-md-block { display: none!important; }
+body[class=sidebar-toggled] .sidebar-brand .d-md-none { display: block!important; }
