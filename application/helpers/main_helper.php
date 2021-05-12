@@ -144,6 +144,20 @@ function callJsFiles($val, $debug = FALSE)
     return $result;
 }
 
+function callCssFiles($val, $debug = FALSE)
+{
+    $result = '';
+    $version = ($debug) ? time() : '';
+
+    foreach($val as $path => $src) {
+        foreach($src as $key => $value) {
+            $result .= '<link rel="stylesheet" href="' .base_url("assets/css/{$path}/{$value}.css?v={$version}"). '">' . "\n";
+        }
+    }
+    
+    return $result;
+}
+
 function invalid_validation($name)
 {
     return !empty(form_error($name)) ? 'is-invalid' : '';

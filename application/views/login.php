@@ -66,7 +66,7 @@
                                                 placeholder="Masukkan password anda..." required>
                                         </div>
 
-                                        <button type="button" onclick="show_result('success', 'Hello World.')" class="btn btn-primary btn-user btn-block">
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
                                             Login
                                         </button>
                                     </form>

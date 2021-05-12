@@ -1,0 +1,9 @@
+.card-cart .image-product img { height: 7rem; }
+.card-cart .detail { flex: 1; }
+
+@media(max-width: 768px) {
+    .card-cart .detail .input-group { width: 50%!important; }
+}
+@media(max-width: 576px) {
+    .card-cart .detail .input-group { width: 100%!important; }
+}

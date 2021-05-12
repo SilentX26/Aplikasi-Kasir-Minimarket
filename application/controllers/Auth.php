@@ -4,6 +4,13 @@ class Auth extends MY_Controller
     function __construct()
     {
         parent::__construct();
+        if(!in_array($this->uri->segment(2), ['login', 'logout']) && !$this->user)
+            setAlertResult('danger', 'Ups, autentikasi dibutuhkan. Silahkan login terlebih dahulu.', 'auth/login');
+    }
+
+    function test()
+    {
+        unset($_SESSION['cart']);
     }
 
     function pengaturan()
@@ -90,14 +97,19 @@ class Auth extends MY_Controller
 
     function index()
     {
-        if(!$this->user)
-            setAlertResult('danger', 'Ups, autentikasi dibutuhkan. Silahkan login terlebih dahulu.', 'auth/login');
-
         $data_statistik_today = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['DATE(tanggal) = ' => get_time('date')]);
         $data_statistik = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total");
 
         $this->render_view('karyawan/dashboard', [
             'pageTitle' => 'Dashboard',
+            'jsFiles' => callJsFiles([
+                'pages' => ['karyawan/dashboard'],
+                'vendor' => ['datatables/jquery.dataTables.min', 'datatables/dataTables.bootstrap4.min']
+            ], TRUE),
+            'cssFiles' => callCssFiles([
+                'pages' => ['dashboard-karyawan'],
+                'vendor' => ['datatables/dataTables.bootstrap4.min']
+            ], TRUE),
             'data_statistik_today' => $data_statistik_today,
             'data_statistik' => $data_statistik
         ]);

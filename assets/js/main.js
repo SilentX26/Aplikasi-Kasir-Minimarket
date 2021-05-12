@@ -46,7 +46,7 @@ const show_result = (status, message) => {
                 enter: "animate__animated animate__" + ((status == "success") ? "fadeInDown" : "shakeX"),
                 exit: "animate__animated animate__fadeOutUp"
             },
-            template: '<div data-notify="container" class="col-11 col-md-4 alert alert-{0}" role="alert">' +
+            template: '<div data-notify="container" class="col-11 col-lg-4 col-md-6 alert alert-{0}" role="alert">' +
                 '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
                 '<span data-notify="icon"></span> ' +
                 '<span data-notify="title"><b>{1}</b></span> ' +
