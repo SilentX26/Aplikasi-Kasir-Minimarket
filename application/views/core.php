@@ -60,12 +60,23 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <? if(isset($user)): ?>
-                <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
-                    <a class="nav-link" href="<?= base_url() ?>">
-                        <i class="fas fa-fw fa-home"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                <? if($this->uri->segment(1) == 'admin'): ?>
+
+                <? else: ?>
+                    <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
+                        <a class="nav-link" href="<?= base_url() ?>">
+                            <i class="fas fa-fw fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item <?= isMenuActive('menu', 'transaksi/riwayat', 2) ?>">
+                        <a class="nav-link" href="<?= base_url('transaksi/riwayat') ?>">
+                            <i class="fas fa-fw fa-history"></i>
+                            <span>Riwayat Transaksi</span>
+                        </a>
+                    </li>
+                <? endif ?>
 
             <? else: ?>
                 <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">

@@ -24,48 +24,98 @@ const refresh_keranjang = () => {
     });
 }
 
-const tambah_produk = (id) => {
-    loader("show");
-    $.ajax({
-        url: `${base_url}/transaksi/ajax`,
-        type: "POST",
-        data: `csrf_token=${csrf_token}&action=tambah-produk&id=${id}`,
-        dataType: "json",
-    
-        error: (jqxhr, txtStatus, err) => {
-            loader("hide");
-            show_result("danger", `Terjadi Kesalahan Ajax, ${txtStatus}`);
-        },
-        success: (res) => {
-            loader("hide");
-            loader("onhide", () => {
-                if(res.status == 1) {
-                    refresh_keranjang();
-                    show_result("success", res.message);
-
-                } else {
-                    show_result("danger", res.message);
-                }
-            });
-        }
-    });
+const tambah_produk = (id_produk, produk) => {
+    $("#modal-tambah-produk form [name=id_produk]").val(id_produk);
+    $("#modal-tambah-produk form [id=produk]").val(produk);
+    $("#modal-tambah-produk").modal("show");
 }
 
 $( function() {
-    $(document).on("click", "#modal-keranjang-belanja #kurang-jumlah", function() {
-        var jumlah_pesanan = $("#modal-keranjang-belanja #jumlah-pesanan").html();
-        jumlah_pesanan = parseInt(jumlah_pesanan);
-
-        var hasil = (jumlah_pesanan >= 1) ? jumlah_pesanan - 1 : 0;
-        $("#modal-keranjang-belanja #jumlah-pesanan").html(hasil);
+    $(document).on("click", "#modal-keranjang-belanja form [data-dismiss=modal]", function() {
+        loader("show");
+        $.ajax({
+            url: `${base_url}/transaksi/ajax`,
+            type: "POST",
+            data: `csrf_token=${csrf_token}&action=reset-keranjang`,
+            dataType: "json",
+    
+            error: (jqxhr, txtStatus, err) => {
+                loader("hide");
+                show_result("danger", `Terjadi Kesalahan Ajax, ${txtStatus}`);
+            },
+            success: (res) => {
+                loader("hide");
+                loader("onhide", () => {
+                    refresh_keranjang();
+                });
+                show_result("success", res.message);
+            }
+        });
     });
 
-    $(document).on("click", "#modal-keranjang-belanja #tambah-jumlah", function() {
-        var jumlah_pesanan = $("#modal-keranjang-belanja #jumlah-pesanan").html();
-        jumlah_pesanan = parseInt(jumlah_pesanan);
+    $(document).on("click", "#modal-tambah-produk form button[type=submit]", function(e) {
+        e.preventDefault();
+        var form_data = $("#modal-tambah-produk form").serialize();
 
-        var hasil = jumlah_pesanan + 1;
-        $("#modal-keranjang-belanja #jumlah-pesanan").html(hasil);
+        loader("show");
+        $.ajax({
+            url: `${base_url}/transaksi/ajax`,
+            type: "POST",
+            data: form_data,
+            dataType: "json",
+    
+            error: (jqxhr, txtStatus, err) => {
+                loader("hide");
+                show_result("danger", `Terjadi Kesalahan Ajax, ${txtStatus}`);
+            },
+            success: (res) => {
+                loader("hide");
+                loader("onhide", () => {
+                    if(res.status == 1) {
+                        refresh_keranjang();
+                        show_result("success", res.message);
+
+                    } else {
+                        show_result("danger", res.message);
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on("click", "#modal-keranjang-belanja [id=edit-jumlah]", function() {
+        var jumlah_pesanan = $(this).parent().find("#jumlah-pesanan").html(),
+            jumlah_pesanan = parseInt(jumlah_pesanan),
+            operasi = $(this).attr("data-operasi"),
+            id_produk = $(this).parent().find("input[name=id_produk]").val();
+        
+        if(operasi == 'kurang') {
+            var hasil = (jumlah_pesanan >= 1) ? jumlah_pesanan - 1 : 0;
+        } else {
+            var hasil = jumlah_pesanan + 1;
+        }
+
+        $(this).parent().find("#jumlah-pesanan").html(`<span class="spinner-border text-primary" role="status" style="height: 1.5rem; width: 1.5rem;"></span>`);
+        $.ajax({
+            url: `${base_url}/transaksi/ajax`,
+            type: "POST",
+            data: `csrf_token=${csrf_token}&action=edit-jumlah&operasi=${operasi}&id=${id_produk}`,
+            dataType: "json",
+    
+            error: (jqxhr, txtStatus, err) => {
+                $("#modal-keranjang-belanja #jumlah-pesanan").html(jumlah_pesanan);
+                show_result("danger", `Terjadi Kesalahan Ajax, ${txtStatus}`);;
+            },
+            success: (res) => {
+                if(res.status == 1) {
+                    refresh_keranjang();
+
+                } else {
+                    $("#modal-keranjang-belanja #jumlah-pesanan").html(jumlah_pesanan);
+                    show_result("danger", res.message);
+                }
+            }
+        });
     });
 
     var table = $("#datatable").DataTable({

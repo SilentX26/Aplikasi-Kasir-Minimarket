@@ -42,6 +42,7 @@ const show_result = (status, message) => {
             mouse_over: "pause",
             newest_on_top: true,
             delay: 3500,
+            z_index: 1060,
             animate: {
                 enter: "animate__animated animate__" + ((status == "success") ? "fadeInDown" : "shakeX"),
                 exit: "animate__animated animate__fadeOutUp"

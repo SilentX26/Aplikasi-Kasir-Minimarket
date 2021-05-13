@@ -33,10 +33,11 @@ class Auth extends MY_Controller
                                 'allowed_types' => 'jpg|png|svg',
                                 'file_name' => $this->user->username
                             ]);
-                            if($this->upload->do_upload('foto-profile'))
+                            if($this->upload->do_upload('foto-profile')) {
                                 $this->user->data->foto_profile = $this->upload->data('file_name');
-                            else
+                            } else {
                                 setAlertResult('danger', 'Ups, proses upload foto profile gagal.');
+                            }
                         }
                     }
 
@@ -46,11 +47,13 @@ class Auth extends MY_Controller
                             'foto_profile' => $this->user->data->foto_profile 
                         ]
                     ], ['username' => $this->user->username]);
-                    if($update !== FALSE)
+                    if($update !== FALSE) {
                         setAlertResult('success', 'Perubahan berhasil disimpan.');
-                    else
+                    } else {
                         setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
+                    }
                     break;
+
                 case 'password':
                     $this->form_validation->set_rules([[
                         'field' => 'new_password',
@@ -71,10 +74,11 @@ class Auth extends MY_Controller
                         } else {
                             $hash_new_password = password_hash($post_new_password, PASSWORD_BCRYPT);
                             $update = $this->Main_model->update('akun', ['password' => $hash_new_password], ['username' => $this->user->username]);
-                            if($update !== FALSE)
+                            if($update !== FALSE) {
                                 setAlertResult('success', 'Perubahan berhasil disimpan.');
-                            else
+                            } else {
                                 setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
+                            }
                         }
  
                     } else {
@@ -97,22 +101,47 @@ class Auth extends MY_Controller
 
     function index()
     {
-        $data_statistik_today = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['DATE(tanggal) = ' => get_time('date')]);
-        $data_statistik = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total");
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $total_harga = array_sum(array_column($_SESSION['cart'], 'harga_jual'));
+            $total_pajak = ($total_harga / 100) * $this->webConfig->pajak;
+            $total_bayar = $total_harga + $total_pajak;
 
-        $this->render_view('karyawan/dashboard', [
-            'pageTitle' => 'Dashboard',
-            'jsFiles' => callJsFiles([
-                'pages' => ['karyawan/dashboard'],
-                'vendor' => ['datatables/jquery.dataTables.min', 'datatables/dataTables.bootstrap4.min']
-            ], TRUE),
-            'cssFiles' => callCssFiles([
-                'pages' => ['dashboard-karyawan'],
-                'vendor' => ['datatables/dataTables.bootstrap4.min']
-            ], TRUE),
-            'data_statistik_today' => $data_statistik_today,
-            'data_statistik' => $data_statistik
-        ]);
+            $insert = $this->Main_model->insert('transaksi', [
+                'username' => $this->user->username,
+                'data' => json_encode($_SESSION['cart']),
+                'total' => json_encode([
+                    'harga' => strval($total_harga),
+                    'pajak' => strval($total_pajak),
+                    'bayar' => strval($total_bayar)
+                ]),
+                'tanggal' => get_time('datetime')
+            ]);
+            if($insert !== FALSE) {
+                unset($_SESSION['cart']);
+                setAlertResult('success', 'Transaksi baru berhasil dibuat.', "transaksi/detail/{$insert}");
+
+            } else {
+                setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
+            }
+
+        } else {
+            $data_statistik_today = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['DATE(tanggal) = ' => get_time('date')]);
+            $data_statistik = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total");
+
+            $this->render_view('karyawan/dashboard', [
+                'pageTitle' => 'Dashboard',
+                'jsFiles' => callJsFiles([
+                    'pages' => ['karyawan/dashboard'],
+                    'vendor' => ['datatables/jquery.dataTables.min', 'datatables/dataTables.bootstrap4.min']
+                ], TRUE),
+                'cssFiles' => callCssFiles([
+                    'pages' => ['dashboard-karyawan'],
+                    'vendor' => ['datatables/dataTables.bootstrap4.min']
+                ], TRUE),
+                'data_statistik_today' => $data_statistik_today,
+                'data_statistik' => $data_statistik
+            ]);
+        }
     }
 
     function login()
