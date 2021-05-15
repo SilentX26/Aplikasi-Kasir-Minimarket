@@ -19,7 +19,7 @@ $( function() {
         },
         "columnDefs": [
             {
-                "targets": [1,2,4], "orderable": false
+                "targets": [1,4], "orderable": false
             }
         ]
     }); 

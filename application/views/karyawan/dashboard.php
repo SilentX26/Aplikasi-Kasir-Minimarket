@@ -43,7 +43,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Transaksi Hari Ini</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                Rp <?= formatted('currency', $data_statistik_today->total) ?> (<?= formatted('currency', $data_statistik_today->jumlah) ?>)
+                                Rp <?= formatted('currency', $data_statistik->today->total) ?> (<?= formatted('currency', $data_statistik->today->jumlah) ?>)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -61,7 +61,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Transaksi</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                Rp <?= formatted('currency', $data_statistik->total) ?> (<?= formatted('currency', $data_statistik->jumlah) ?>)
+                                Rp <?= formatted('currency', $data_statistik->total->total) ?> (<?= formatted('currency', $data_statistik->total->jumlah) ?>)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -78,7 +78,7 @@
                     <div id="keranjang-belanja">
                         <button class="btn btn-success" data-toggle="modal" href="#modal-keranjang-belanja">
                             Keranjang Belanja
-                            <span class="badge badge-light ml-2"><?= (isset($_SESSION['cart'])) ? formatted('currency', count($_SESSION['cart'])) : 0 ?></span>
+                            <span class="badge badge-light ml-2"><?= (isset($_SESSION['cart'])) ? formatted('currency', count($_SESSION['cart']['items'])) : 0 ?></span>
                         </button>
 
                         <div class="modal fade" tabindex="-1" id="modal-keranjang-belanja">
@@ -92,9 +92,9 @@
                                     </div>
                                     <div class="modal-body">
                                         <?
-                                        if(isset($_SESSION['cart']) && count($_SESSION['cart']) >= 1):
+                                        if(isset($_SESSION['cart']) && count($_SESSION['cart']['items']) >= 1):
                                             $i = 0;
-                                            foreach($_SESSION['cart'] as $key => $value):
+                                            foreach($_SESSION['cart']['items'] as $key => $value):
                                         ?>
 
                                             <? if($i != 0): ?>
@@ -131,7 +131,7 @@
                                         <? endif ?>
                                     </div>
 
-                                    <? if(isset($_SESSION['cart']) && count($_SESSION['cart']) >= 1): ?>
+                                    <? if(isset($_SESSION['cart']) && count($_SESSION['cart']['items']) >= 1): ?>
                                         <div class="modal-footer">
                                             <form method="POST">
                                                 <input type="hidden" name="csrf_token" value="<?= $this->security->get_csrf_hash() ?>">

@@ -162,3 +162,8 @@ function invalid_validation($name)
 {
     return !empty(form_error($name)) ? 'is-invalid' : '';
 }
+
+function select_opt($value, $valid_value)
+{
+    return ($value == $valid_value) ? 'selected' : '';
+}

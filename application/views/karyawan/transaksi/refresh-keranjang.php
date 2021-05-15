@@ -2,7 +2,7 @@
 
     <button class="btn btn-success" data-toggle="modal" href="#modal-keranjang-belanja">
         Keranjang Belanja
-        <span class="badge badge-light ml-2"><?= (isset($_SESSION['cart'])) ? formatted('currency', count($_SESSION['cart'])) : 0 ?></span>
+        <span class="badge badge-light ml-2"><?= (isset($_SESSION['cart'])) ? formatted('currency', count($_SESSION['cart']['items'])) : 0 ?></span>
     </button>
 
     <div class="modal fade" tabindex="-1" id="modal-keranjang-belanja">
@@ -16,9 +16,9 @@
                 </div>
                 <div class="modal-body">
                     <?
-                    if(isset($_SESSION['cart']) && count($_SESSION['cart']) >= 1):
+                    if(isset($_SESSION['cart']) && count($_SESSION['cart']['items']) >= 1):
                         $i = 0;
-                        foreach($_SESSION['cart'] as $key => $value):
+                        foreach($_SESSION['cart']['items'] as $key => $value):
                     ?>
 
                         <? if($i != 0): ?>
@@ -55,7 +55,7 @@
                     <? endif ?>
                 </div>
 
-                <? if(isset($_SESSION['cart']) && count($_SESSION['cart']) >= 1): ?>
+                <? if(isset($_SESSION['cart']) && count($_SESSION['cart']['items']) >= 1): ?>
                     <div class="modal-footer">
                         <form method="POST">
                             <input type="hidden" name="csrf_token" value="<?= $this->security->get_csrf_hash() ?>">

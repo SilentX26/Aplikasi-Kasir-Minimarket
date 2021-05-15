@@ -61,3 +61,22 @@ $route['error/(:any)'] = 'Err/index/$1';
 */
 /* # Pengaturan Akun */
 $route['pengaturan-akun'] = 'Auth/pengaturan';
+
+/*
+    @ Admin Panel
+*/
+/* # Dashboard */
+$route['admin/dashboard'] = 'Admin/Dashboard/index';
+
+/* # Transaksi */
+$route['admin/transaksi'] = 'Admin/Transaksi/index';
+$route['admin/transaksi/hapus'] = 'Admin/Transaksi/hapus';
+$route['admin/transaksi/export'] = 'Admin/Transaksi/export';
+
+/* # Akun */
+$route['admin/adkun'] = 'Admin/Akun/index';
+$route['admin/akun/tambah'] = 'Admin/Akun/tambah';
+$route['admin/akun/hapus'] = 'Admin/Akun/hapus';
+$route['admin/akun/edit/(:num)'] = 'Admin/Akun/edit/$1';
+$route['admin/akun/export'] = 'Admin/Akun/export';
+$route['admin/akun/import'] = 'Admin/Akun/import';

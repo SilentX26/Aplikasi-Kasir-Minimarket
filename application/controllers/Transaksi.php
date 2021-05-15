@@ -66,8 +66,8 @@ class Transaksi extends MY_Controller
             $this->render_view('karyawan/transaksi/riwayat', [
                 'pageTitle' => 'Riwayat Transaksi',
                 'jsFiles' => callJsFiles([
-                    'pages' => ['karyawan/transaksi/riwayat'],
-                    'vendor' => ['datatables/jquery.dataTables.min', 'datatables/dataTables.bootstrap4.min']
+                    'vendor' => ['datatables/jquery.dataTables.min', 'datatables/dataTables.bootstrap4.min'],
+                    'pages' => ['karyawan/transaksi/riwayat']
                 ], TRUE),
                 'cssFiles' => callCssFiles([
                     'vendor' => ['datatables/dataTables.bootstrap4.min']
@@ -85,7 +85,7 @@ class Transaksi extends MY_Controller
         switch($post_action) {
             case 'reset-keranjang':
                 $this->load->model('Produk_model');
-                foreach($_SESSION['cart'] as $key => $value)
+                foreach($_SESSION['cart']['items'] as $key => $value)
                     $this->Produk_model->set_stok($key, '+', $value['jumlah']);
 
                 unset($_SESSION['cart']);
@@ -98,28 +98,33 @@ class Transaksi extends MY_Controller
 
             case 'edit-jumlah':
                 $post_id = filter($this->input->post('id', TRUE));
-                $data_produk = $this->Main_model->get_row('produk', 'stok', ['id' => $post_id]);
+                $data_produk = $this->Main_model->get_row('produk', 'stok, harga', ['id' => $post_id]);
                 $post_operasi = filter($this->input->post('operasi', TRUE));
 
                 if($post_operasi == 'tambah' && $data_produk->stok == 0) {
                     $output = ['status' => 0, 'message' => 'Ups, stok untuk produk ini kosong.'];
 
                 } else {
+                    $data_produk->harga = json_decode($data_produk->harga);
                     $stok_sekarang = ($post_operasi == 'tambah') ? $data_produk->stok - 1 : $data_produk->stok + 1;
+
                     $update = $this->Main_model->update('produk', ['stok' => $stok_sekarang], ['id' => $post_id]);
                     if($update !== FALSE) {
-                        $harga_jual_per_item = $_SESSION['cart'][$post_id]['harga_jual'] / $_SESSION['cart'][$post_id]['jumlah'];
+                        $harga_jual_per_item = $data_produk->harga->jual;
+                        $total_laba = $data_produk->harga->jual - $data_produk->harga->beli;
                         
-                        if($post_operasi == 'kurang' && $_SESSION['cart'][$post_id]['jumlah'] <= 1) {
-                            unset($_SESSION['cart'][$post_id]);
+                        if($post_operasi == 'kurang' && $_SESSION['cart']['items'][$post_id]['jumlah'] <= 1) {
+                            unset($_SESSION['cart']['items'][$post_id]);
 
                         } else if($post_operasi == 'tambah') {
-                            $_SESSION['cart'][$post_id]['jumlah'] += 1;
-                            $_SESSION['cart'][$post_id]['harga_jual'] += $harga_jual_per_item;
+                            $_SESSION['cart']['items'][$post_id]['jumlah'] += 1;
+                            $_SESSION['cart']['items'][$post_id]['harga_jual'] += $harga_jual_per_item;
+                            $_SESSION['cart']['total_laba'] += $total_laba;
                             
                         } else {
-                            $_SESSION['cart'][$post_id]['jumlah'] -= 1;
-                            $_SESSION['cart'][$post_id]['harga_jual'] -= $harga_jual_per_item;
+                            $_SESSION['cart']['items'][$post_id]['jumlah'] -= 1;
+                            $_SESSION['cart']['items'][$post_id]['harga_jual'] -= $harga_jual_per_item;
+                            $_SESSION['cart']['total_laba'] -= $total_laba;
                         }
 
                         $output = ['status' => 1, 'message' => 'Jumlah pesanan berhasil dirubah.'];
@@ -137,7 +142,7 @@ class Transaksi extends MY_Controller
             case 'tambah-produk':
                 $post_id = filter($this->input->post('id_produk', TRUE));
                 $post_jumlah = filter($this->input->post('jumlah', TRUE));
-                $data_produk = $this->Main_model->get_row('produk', "nama, gambar, JSON_UNQUOTE(JSON_EXTRACT(harga, '$.jual')) AS harga_jual, stok", ['id' => $post_id]);
+                $data_produk = $this->Main_model->get_row('produk', 'nama, gambar, harga, stok', ['id' => $post_id]);
 
                 if(!$data_produk) {
                     $output = ['status' => 0, 'message' => 'Terjadi kesalahan, data produk tidak dapat ditemukan.'];
@@ -145,19 +150,24 @@ class Transaksi extends MY_Controller
                     $output = ['status' => 0, 'message' => 'Ups, stok produk ini sudah habis.'];
 
                 } else {
+                    $data_produk->harga = json_decode($data_produk->harga);
                     $stok_sekarang = $data_produk->stok - $post_jumlah;
                     $stok_sekarang = ($stok_sekarang >= 1) ? $stok_sekarang : 0;
                     $post_jumlah = ($stok_sekarang >= 1) ? $post_jumlah : $data_produk->stok;
 
                     $update = $this->Main_model->update('produk', ['stok' => $stok_sekarang], ['id' => $post_id]);
                     if($update !== FALSE) {
-                        $harga_jual = $data_produk->harga_jual * $post_jumlah;
+                        $harga_jual = $data_produk->harga->jual * $post_jumlah;
+                        $total_laba = $harga_jual - ($data_produk->harga->beli * $post_jumlah);
+
                         if(isset($_SESSION['cart'][$post_id])) {
-                            $_SESSION['cart'][$post_id]['harga_jual'] =+ $harga_jual;
-                            $_SESSION['cart'][$post_id]['jumlah'] =+ $post_jumlah;
+                            $_SESSION['cart']['total_laba'] =+ $total_laba;
+                            $_SESSION['cart']['items'][$post_id]['harga_jual'] =+ $harga_jual;
+                            $_SESSION['cart']['items'][$post_id]['jumlah'] =+ $post_jumlah;
 
                         } else {
-                            $_SESSION['cart'][$post_id] = [
+                            $_SESSION['cart']['total_laba'] = $total_laba;
+                            $_SESSION['cart']['items'][$post_id] = [ 
                                 'nama' => $data_produk->nama,
                                 'gambar' => (!empty($data_produk->gambar)) ? base_url("assets/img/produk/{$data_produk->gambar}") : base_url("assets/img/{$this->webConfig->icon}"),
                                 'harga_jual' => $harga_jual,

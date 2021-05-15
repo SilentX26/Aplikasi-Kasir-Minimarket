@@ -61,6 +61,33 @@
             <!-- Nav Item - Pages Collapse Menu -->
             <? if(isset($user)): ?>
                 <? if($this->uri->segment(1) == 'admin'): ?>
+                    <li class="nav-item <?= isMenuActive('menu', 'admin/dashboard', 2) ?>">
+                        <a class="nav-link" href="<?= base_url('admin/dashboard') ?>">
+                            <i class="fas fa-fw fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('') ?>">
+                            <i class="fas fa-fw fa-user"></i>
+                            <span>Karyawan Panel</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item <?= isMenuActive('menu', 'admin/transaksi', 2) ?>">
+                        <a class="nav-link" href="<?= base_url('admin/transaksi') ?>">
+                            <i class="fas fa-fw fa-shopping-basket"></i>
+                            <span>Kelola Transaksi</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item <?= isMenuActive('menu', 'admin/akun', 2) ?>">
+                        <a class="nav-link" href="<?= base_url('admin/akun') ?>">
+                            <i class="fas fa-fw fa-users-cog"></i>
+                            <span>Kelola Akun</span>
+                        </a>
+                    </li>
 
                 <? else: ?>
                     <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
@@ -69,6 +96,15 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+
+                    <? if($user->data->level == 'Admin'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('admin/dashboard') ?>">
+                                <i class="fas fa-fw fa-headset"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                        </li>
+                    <? endif ?>
 
                     <li class="nav-item <?= isMenuActive('menu', 'transaksi/riwayat', 2) ?>">
                         <a class="nav-link" href="<?= base_url('transaksi/riwayat') ?>">

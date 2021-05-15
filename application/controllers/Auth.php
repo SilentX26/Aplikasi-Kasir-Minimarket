@@ -102,17 +102,18 @@ class Auth extends MY_Controller
     function index()
     {
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $total_harga = array_sum(array_column($_SESSION['cart'], 'harga_jual'));
+            $total_harga = array_sum(array_column($_SESSION['cart']['items'], 'harga_jual'));
             $total_pajak = ($total_harga / 100) * $this->webConfig->pajak;
             $total_bayar = $total_harga + $total_pajak;
 
             $insert = $this->Main_model->insert('transaksi', [
                 'username' => $this->user->username,
-                'data' => json_encode($_SESSION['cart']),
+                'data' => json_encode($_SESSION['cart']['items']),
                 'total' => json_encode([
                     'harga' => strval($total_harga),
                     'pajak' => strval($total_pajak),
-                    'bayar' => strval($total_bayar)
+                    'bayar' => strval($total_bayar),
+                    'laba' => strval($_SESSION['cart']['total_laba'])
                 ]),
                 'tanggal' => get_time('datetime')
             ]);
@@ -125,8 +126,8 @@ class Auth extends MY_Controller
             }
 
         } else {
-            $data_statistik_today = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['DATE(tanggal) = ' => get_time('date')]);
-            $data_statistik = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total");
+            $data_statistik_today = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['DATE(tanggal) = ' => get_time('date'), 'username' => $this->user->username]);
+            $data_statistik = $this->Main_model->get_row('transaksi', "COUNT(id) AS jumlah, SUM(JSON_UNQUOTE(JSON_EXTRACT(total, '$.harga'))) AS total", ['username' => $this->user->username]);
 
             $this->render_view('karyawan/dashboard', [
                 'pageTitle' => 'Dashboard',
@@ -138,8 +139,10 @@ class Auth extends MY_Controller
                     'pages' => ['dashboard-karyawan'],
                     'vendor' => ['datatables/dataTables.bootstrap4.min']
                 ], TRUE),
-                'data_statistik_today' => $data_statistik_today,
-                'data_statistik' => $data_statistik
+                'data_statistik' => (object) [
+                    'today' => $data_statistik_today,
+                    'total' => $data_statistik
+                ]
             ]);
         }
     }

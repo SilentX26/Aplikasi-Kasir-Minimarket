@@ -22,6 +22,9 @@
     .loader { left: 44%; }   
 }
 
+.sidebar .sidebar-heading { margin-bottom: 1rem; }
+.sidebar .nav-item .nav-link { padding-top: 0!important; }
+
 body[class=sidebar-toggled] .sidebar-brand .d-md-block { display: none!important; }
 body[class=sidebar-toggled] .sidebar-brand .d-md-none { display: block!important; }
 

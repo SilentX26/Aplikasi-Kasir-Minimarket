@@ -13,7 +13,7 @@
 
                         <div class="form-group">
                             <label>Foto Profil</label><br>
-                            <img id="image-preview-foto-profile" src="<?= base_url("assets/img/akun/{$user->data->foto_profile}") ?>" alt="Preview Foto Profile" class="rounded mb-4" style="height: 8.5rem;">
+                            <img id="image-preview-foto-profile" src="<?= base_url("assets/img/akun/{$data_akun->data->foto_profile}") ?>" alt="Preview Foto Profile" class="rounded mb-4" style="height: 8.5rem;">
                             
                             <input type="file" name="foto-profile" class="form-control">
                             <small class="text-muted font-italic">* Resolusi yang disarankan: 32px X 32px</small>
@@ -21,17 +21,20 @@
 
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="text" class="form-control" value="<?= $user->username ?>" readonly>
+                            <input type="text" class="form-control" value="<?= $data_akun->username ?>" readonly>
                         </div>
 
                         <div class="form-group">
                             <label>Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" class="form-control" value="<?= $user->data->nama_lengkap ?>" required>
+                            <input type="text" name="nama_lengkap" class="form-control" value="<?= $data_akun->data->nama_lengkap ?>" required>
                         </div>
 
-                        <div class="form-group mt-4">
-                            <label>Konfirmasi Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="Masukkan password akun anda" required>
+                        <div class="form-group">
+                            <label>Level</label>
+                            <select name="level" class="form-control" required>
+                                <option value="Karyawan" <?= select_opt($data_akun->data->level, 'Karyawan') ?>>Karyawan</option>
+                                <option value="Admin" <?= select_opt($data_akun->data->level, 'Admin') ?>>Admin</option>
+                            </select>
                         </div>
 
                         <div class="mt-4 text-right">
@@ -67,11 +70,6 @@
                             <?= form_error('new_password_2', '<small class="form-text text-danger font-italic">', '</small>') ?>
                         </div>
 
-                        <div class="form-group mt-4">
-                            <label>Konfirmasi Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="Masukkan password akun anda" required>
-                        </div>
-
                         <div class="mt-4 text-right">
                             <button type="reset" class="btn btn-danger">Reset</button>
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -79,5 +77,11 @@
                     </form>
                 </div>
             </div>
+        </div>
+
+        <div class="col-12 mt-4 text-center">
+            <a href="<?= base_url('admin/akun') ?>" class="text-decoration-none">
+                <i class="fas fa-arrow-left mr-1"></i> Kembali
+            </a>
         </div>
     </div>
