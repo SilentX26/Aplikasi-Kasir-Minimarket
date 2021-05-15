@@ -89,6 +89,13 @@
                         </a>
                     </li>
 
+                    <li class="nav-item <?= isMenuActive('menu', 'admin/produk', 2) ?>">
+                        <a class="nav-link" href="<?= base_url('admin/produk') ?>">
+                            <i class="fas fa-fw fa-tags"></i>
+                            <span>Kelola Produk</span>
+                        </a>
+                    </li>
+
                 <? else: ?>
                     <li class="nav-item <?= isMenuActive('menu', '', 1) ?>">
                         <a class="nav-link" href="<?= base_url() ?>">

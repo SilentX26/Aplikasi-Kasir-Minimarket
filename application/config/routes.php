@@ -74,9 +74,17 @@ $route['admin/transaksi/hapus'] = 'Admin/Transaksi/hapus';
 $route['admin/transaksi/export'] = 'Admin/Transaksi/export';
 
 /* # Akun */
-$route['admin/adkun'] = 'Admin/Akun/index';
+$route['admin/akun'] = 'Admin/Akun/index';
 $route['admin/akun/tambah'] = 'Admin/Akun/tambah';
 $route['admin/akun/hapus'] = 'Admin/Akun/hapus';
 $route['admin/akun/edit/(:num)'] = 'Admin/Akun/edit/$1';
 $route['admin/akun/export'] = 'Admin/Akun/export';
 $route['admin/akun/import'] = 'Admin/Akun/import';
+
+/* # Produk */
+$route['admin/produk'] = 'Admin/Produk/index';
+$route['admin/produk/tambah'] = 'Admin/Produk/tambah';
+$route['admin/produk/hapus'] = 'Admin/Produk/hapus';
+$route['admin/produk/edit/(:num)'] = 'Admin/Produk/edit/$1';
+$route['admin/produk/export'] = 'Admin/Produk/export';
+$route['admin/produk/import'] = 'Admin/Produk/import';

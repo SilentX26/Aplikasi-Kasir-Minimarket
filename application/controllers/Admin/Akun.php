@@ -157,12 +157,11 @@ class Akun extends MY_Controller
 
     function hapus()
     {
-        if($_SERVER['REQUEST_METHOD'] != 'POST')
-            redirect('error/403');
-
         $post_id = filter($this->input->post('id', TRUE));
         $data_akun = $this->Main_model->get_row('akun', "JSON_UNQUOTE(JSON_EXTRACT(data, '$.foto_profile')) AS foto_profile", ['id' => $post_id]);
-        if(!$data_akun) {
+        if($_SERVER['REQUEST_METHOD'] != 'POST') {
+            redirect('error/403');
+        } else if(!$data_akun) {
             $output = ['status' => 0, 'message' => "Terjadi kesalahan, data akun dengan ID {$id} tidak dapat ditemukan."];
 
         } else {
