@@ -8,17 +8,19 @@ class Err extends MY_Controller
 
     function index($code = '404')
     {
+        if(!in_array($code, ['404', '403', 'mt']))
+            $code = '404';
         if(in_array($code, ['404', '403']))
             header("HTTP/1.1 {$code}");
 
-        $title = (in_array($code, ['404', '403', 'maintenance']))
-            ? strtr($code, ['404' => 'Halaman Tidak Ditemukan', '403' => 'Akses Diblokir', 'maintenance' => 'Sedang Maintenance'])
+        $title = (in_array($code, ['404', '403', 'mt']))
+            ? strtr($code, ['404' => 'Halaman Tidak Ditemukan', '403' => 'Akses Diblokir', 'mt' => 'Sedang Maintenance'])
             : 'Halaman Tidak Ditemukan';
         switch($code) {
             case '403':
                 $message = 'Ups, aksi anda diblokir. Sistem mendeteksi adanya upaya yang tidak wajar.';
                 break;
-            case 'maintenance':
+            case 'mt':
                 $message = 'Saat ini website sedang dalam tahap pemeliharaan, silahkan coba dalam beberapa saat lagi.';
                 break;
 

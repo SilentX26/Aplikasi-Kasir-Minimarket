@@ -14,6 +14,9 @@ class MY_Controller extends CI_Controller
         $this->webConfig = $this->Main_model->get_rows('konfigurasi');
         $this->webConfig = array_combine( array_column($this->webConfig, 'kode'), array_column($this->webConfig, 'value') );
         $this->webConfig = (object) $this->webConfig;
+
+        if(!in_array($this->uri->segment(1), ['error', 'admin'])  && $this->webConfig->website != 'AKTIF')
+            redirect('error/mt');
     }
 
     function render_view($content, $data = [])

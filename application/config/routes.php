@@ -88,3 +88,8 @@ $route['admin/produk/hapus'] = 'Admin/Produk/hapus';
 $route['admin/produk/edit/(:num)'] = 'Admin/Produk/edit/$1';
 $route['admin/produk/export'] = 'Admin/Produk/export';
 $route['admin/produk/import'] = 'Admin/Produk/import';
+
+/* # Konfigurasi */
+$route['admin/konfigurasi'] = 'Admin/Konfigurasi/index';
+$route['admin/konfigurasi/logo'] = 'Admin/Konfigurasi/logo';
+$route['admin/konfigurasi/lainnya'] = 'Admin/Konfigurasi/lainnya';
