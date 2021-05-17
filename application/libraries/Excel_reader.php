@@ -4,8 +4,20 @@ class Excel_Reader
 {
     function read($file)
     {
-        $file_type = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($file_type);
-        return $reader->load($file)->getActiveSheet()->toArray();
+        return \PhpOffice\PhpSpreadsheet\IOFactory::load($file)
+            ->getActiveSheet()->toArray();
+    }
+
+    function write($file_name, $data, $custom_width = NULL)
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\SpreadSheet;
+        if($custom_width !== NULL) {
+            foreach($custom_width as $key => $value)
+                $spreadsheet->getActiveSheet()->getColumnDimension($key)->setWidth($value);
+        }
+
+        $spreadsheet->getActiveSheet()->fromArray($data);
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        return $writer->save($file_name);
     }
 }
