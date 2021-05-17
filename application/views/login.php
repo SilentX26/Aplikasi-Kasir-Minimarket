@@ -48,7 +48,7 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image" style="background-image: url('https://i.pinimg.com/564x/8c/6f/63/8c6f636243880c2185d9d619bc588951.jpg')!important;"></div>
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image" style="background-image: url('<?= base_url('assets/img/bg-login.jpg') ?>')!important;"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">

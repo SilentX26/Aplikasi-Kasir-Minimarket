@@ -33,6 +33,7 @@ class Konfigurasi extends MY_Controller
                     'allowed_types' => 'jpg|png|ico|svg'
                 ]);
                 if($this->upload->do_upload($key) !== FALSE) {
+                    unlink("assets/img/{$this->webConfig->$key}");
                     $file_name = $this->upload->data('file_name');
                     $this->Main_model->update('konfigurasi', ['value' => $file_name], ['kode' => $key]);
                 }

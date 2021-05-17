@@ -2,7 +2,7 @@
 /*
     ###################################################################################################
 
-    @ Script Point of Sales
+    @ Script Aplikasi Kasir
     @ Pengelolaan penjualan Minimarket/Toko
     @ Dibuat oleh Muhammad Randika Rosyid
     @ Dilarang memperjual belikan script ini tanpa sepengetahuan pembuat!!
