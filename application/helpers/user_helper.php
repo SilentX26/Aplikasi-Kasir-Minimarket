@@ -19,7 +19,7 @@ function core_waktu_terkini()
 {
     $hari = [
         'Sun' => 'Minggu',
-        'Mon' => 'Sening',
+        'Mon' => 'Senin',
         'Tue' => 'Selasa',
         'Wed' => 'Rabu',
         'Thu' => 'kamis',

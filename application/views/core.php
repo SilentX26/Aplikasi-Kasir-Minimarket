@@ -167,6 +167,14 @@
                     <? if(isset($user)): ?>
                         <!-- Topbar Navbar -->
                         <ul class="navbar-nav ml-auto">
+                            <? if($webConfig->website != 'AKTIF' && $user->data->level == 'Admin'): ?>
+                                <li class="nav-item no-arrow mx-1">
+                                    <div class="nav-link" href="#" data-toggle="tooltip" title="Saat ini website sedang berstatus maintenance, anda tidak akan mendapatkan impact karena level anda adalah seorang admin.">
+                                        <i class="fas fa-exclamation-triangle text-danger fa-fw"></i>
+                                    </div>
+                                </li>
+                            <? endif ?>
+
                             <div class="topbar-divider d-none d-sm-block"></div>
 
                             <!-- Nav Item - User Information -->

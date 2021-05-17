@@ -15,7 +15,7 @@ class MY_Controller extends CI_Controller
         $this->webConfig = array_combine( array_column($this->webConfig, 'kode'), array_column($this->webConfig, 'value') );
         $this->webConfig = (object) $this->webConfig;
 
-        if(!in_array($this->uri->segment(1), ['error', 'admin'])  && $this->webConfig->website != 'AKTIF')
+        if($this->user !== FALSE && $this->user->data->level != 'Admin' && !in_array($this->uri->segment(1), ['error', 'admin'])  && $this->webConfig->website != 'AKTIF')
             redirect('error/mt');
     }
 
