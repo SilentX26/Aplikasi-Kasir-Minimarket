@@ -37,4 +37,4 @@ Aplikasi ini tersedia secara open source, artinya anda dapat mengambil dan menge
 
 Silahkan gunakan aplikasi ini untuk hal yang bermanfaat, dan saya sangat berterimakasih bila anda memberikan source(sumber) dimana anda mendapatkan source code aplikasi ini (saya sendiri). Terimakasih, mohon maaf bila ada kekurangan.
 
-_Bye ~_
+_Bye~_
