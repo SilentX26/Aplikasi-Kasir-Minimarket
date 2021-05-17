@@ -22,13 +22,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Username</label>
-                                    <input type="text" name="username" class="form-control" placeholder="Masukkan username">
+                                    <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Nama Lengkap</label>
-                                    <input type="text" name="nama_lengkap" class="form-control" placeholder="Masukkan nama lengkap">
+                                    <input type="text" name="nama_lengkap" class="form-control" placeholder="Masukkan nama lengkap" required>
                                 </div>
                             </div>
                         </div>
@@ -37,13 +37,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Password</label>
-                                    <input type="password" name="password" class="form-control" placeholder="Masukkan password">
+                                    <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Konfirmasi Password</label>
-                                    <input type="password" name="confirm_password" class="form-control" placeholder="Konfirmasi password">
+                                    <input type="password" name="confirm_password" class="form-control" placeholder="Konfirmasi password" required>
                                 </div>
                             </div>
                         </div>

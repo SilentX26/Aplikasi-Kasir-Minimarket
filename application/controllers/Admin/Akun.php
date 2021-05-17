@@ -10,6 +10,102 @@ class Akun extends MY_Controller
             redirect('error/403');
     }
 
+    function export()
+    {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $post_jumlah = filter($this->input->post('jumlah', TRUE));
+            $post_order_by = filter($this->input->post('order_by', TRUE));
+
+            if($post_jumlah <= 0) {
+                setAlertResult('danger', 'Ups, jumlah data minimal ialah 1 data');
+            } else if($post_jumlah > 100) {
+                setAlertResult('danger', 'Ups, jumlah data maksimal ialah 100 data');
+
+            } else {
+                $data_akun = $this->Main_model->get_rows('akun', [
+                    'select' => "username, password, JSON_UNQUOTE(JSON_EXTRACT(data, '$.nama_lengkap')) AS nama_lengkap, JSON_UNQUOTE(JSON_EXTRACT(data, '$.level')) AS level",
+                    'order_by' => ['id', $post_order_by],
+                    'limit' => [$post_jumlah]
+                ]);
+                $data_akun = array_map('array_values', $data_akun);
+                array_unshift($data_akun, ['username', 'password', 'nama_lengkap', 'level']);
+
+                $this->load->library('Excel_Reader');
+                $export = $this->excel_reader->write('Data Akun', $data_akun, [
+                    'A' => 15,
+                    'B' => 45,
+                    'C' => 40,
+                    'D' => 15
+                ]);
+
+                header("Content-Disposition: attachment; filename=\"Data Akun.xlsx\"");
+                echo $export;
+            }
+
+        } else {
+            $this->render_view('admin/akun/export', [
+                'pageTitle' => 'Export Data Akun'
+            ]);
+        }
+    }
+
+    function import()
+    {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if(!empty($_FILES['file']['name'])) {
+                $this->load->library('upload', [
+                    'file_name' => 'IMPORT-DATA-AKUN',
+                    'allowed_types' => 'xls|xlsx',
+                    'upload_path' => './assets/tmp/'
+                ]);
+                if($this->upload->do_upload('file') !== FALSE) {
+                    $file_name = $this->upload->data('file_name');
+                    $this->load->library('Excel_reader');
+
+                    $excel_data = $this->excel_reader->read("assets/tmp/{$file_name}");
+                    unset($excel_data[0]);
+                    unlink("assets/tmp/{$file_name}");
+                    
+                    $data_insert = [];
+                    foreach($excel_data as $key => $value) {
+                        $cek_user = $this->Main_model->get_row('akun', 'id', ['username' => $value[0]]);
+                        if(!$cek_user)
+                            array_push($data_insert, [
+                                'username' => $value[0],
+                                'password' => password_hash($value[1], PASSWORD_BCRYPT),
+                                'data' => json_encode([
+                                    'nama_lengkap' => $value[2],
+                                    'foto_profile' => '',
+                                    'level' => $value[3]
+                                ]),
+                                'login_token' => ''
+                            ]);
+                    }
+
+                    $insert = $this->Main_model->insert_batch('akun', $data_insert);
+                    if($insert !== FALSE) {
+                        $rows_insert = formatted('currency', $insert);
+                        setAlertResult('success', "{$rows_insert} akun berhasil ditambahkan.");
+
+                    } else {
+                        setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
+                    }
+
+                } else {
+                    setAlertResult('danger', 'Ups, proses upload file gagal.');
+                }
+
+            } else {
+                setAlertResult('danger', 'Ups, anda tidak mengirimkan file apapun untuk diimport.');
+            }
+
+        } else {
+            $this->render_view('admin/akun/import', [
+                'pageTitle' => 'Import Data Akun'
+            ]);
+        }
+    }
+
     function tambah()
     {
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -28,38 +124,35 @@ class Akun extends MY_Controller
                 $post_level = filter($this->input->post('level', TRUE));
 
                 $cek_user = $this->Main_model->get_row('akun', 'id', ['username' => $post_username]);
-                if(empty($_FILES['foto-profile'])) {
-                    setAlertResult('danger', 'Ups, foto profile harap diisi.');
-                } else if($cek_user !== FALSE) {
+                if($cek_user !== FALSE) {
                     setAlertResult('danger', 'Ups, username yang anda masukkan sudah digunakan.');
                     
                 } else {
-                    $this->load->library('upload', [
-                        'upload_path' => './assets/img/akun/',
-                        'allowed_types' => 'jpg|png|svg',
-                        'file_name' => $this->user->username
-                    ]);
-                    if($this->upload->do_upload('foto-profile')) {
-                        $image_user = $this->upload->data('file_name');
-
-                        $insert = $this->Main_model->insert('akun', [
-                            'username' => $post_username,
-                            'password' => password_hash($post_password, PASSWORD_BCRYPT),
-                            'data' => json_encode([
-                                'nama_lengkap' => $post_nama_lengkap,
-                                'foto_profile' => $image_user,
-                                'level' => $post_level
-                            ]),
-                            'login_token' => ''
+                    $image_user = '';
+                    if(!empty($_FILES['foto-profile']['name'])) {
+                        $this->load->library('upload', [
+                            'upload_path' => './assets/img/akun/',
+                            'allowed_types' => 'jpg|png|svg',
+                            'file_name' => $this->user->username
                         ]);
-                        if($insert !== FALSE) {
-                            setAlertResult('success', 'Akun baru berhasil ditambahkan.');
-                        } else {
-                            setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
-                        }
+                        if($this->upload->do_upload('foto-profile'))
+                            $image_user = $this->upload->data('file_name');
+                    }
 
+                    $insert = $this->Main_model->insert('akun', [
+                        'username' => $post_username,
+                        'password' => password_hash($post_password, PASSWORD_BCRYPT),
+                        'data' => json_encode([
+                            'nama_lengkap' => $post_nama_lengkap,
+                            'foto_profile' => $image_user,
+                            'level' => $post_level
+                        ]),
+                        'login_token' => ''
+                    ]);
+                    if($insert !== FALSE) {
+                        setAlertResult('success', 'Akun baru berhasil ditambahkan.');
                     } else {
-                        setAlertResult('danger', 'Ups, proses upload foto profile gagal.');
+                        setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
                     } 
                 }
             }
@@ -167,7 +260,8 @@ class Akun extends MY_Controller
         } else {
             $hapus = $this->Main_model->delete('akun', ['id' => $post_id]);
             if($hapus !== FALSE) {
-                unlink("assets/img/akun/{$data_akun->foto_profile}");
+                if(!empty($data_akun->foto_profile))
+                    unlink("assets/img/akun/{$data_akun->foto_profile}");
                 $output = ['status' => 1, 'message' => 'Data akun berhasil dihapus.'];
 
             } else {
@@ -196,7 +290,9 @@ class Akun extends MY_Controller
                     'select' => "JSON_UNQUOTE(JSON_EXTRACT(data, '$.foto_profile')) AS foto_profile",
                     'column' => 'foto_profile',
                     'formatted' => function($param) {
-                        $image_url = base_url("assets/img/akun/{$param}");
+                        $image_url = (!empty($param))    
+                            ? base_url("assets/img/akun/{$param}")
+                            : base_url("assets/img/{$this->webConfig->icon}");
                         return "<img src='{$image_url}' style='height: 3rem;'>";
                     } 
                 ],

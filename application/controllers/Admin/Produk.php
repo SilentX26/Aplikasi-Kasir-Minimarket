@@ -10,6 +10,99 @@ class Produk extends MY_Controller
             redirect('error/403');
     }
 
+    function import()
+    {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if(!empty($_FILES['file']['name'])) {
+                $this->load->library('upload', [
+                    'file_name' => 'IMPORT-DATA-PRODUK',
+                    'allowed_types' => 'xls|xlsx',
+                    'upload_path' => './assets/tmp/'
+                ]);
+                if($this->upload->do_upload('file') !== FALSE) {
+                    $file_name = $this->upload->data('file_name');
+                    $this->load->library('Excel_reader');
+
+                    $excel_data = $this->excel_reader->read("assets/tmp/{$file_name}");
+                    unset($excel_data[0]);
+                    unlink("assets/tmp/{$file_name}");
+                    
+                    $data_insert = [];
+                    foreach($excel_data as $key => $value)
+                        array_push($data_insert, [
+                            'nama' => $value[0],
+                            'gambar' => '',
+                            'harga' => json_encode([
+                                'beli' => $value[1],
+                                'jual' => $value[2],
+                            ]),
+                            'stok' => $value[3]
+                        ]);
+
+                    $insert = $this->Main_model->insert_batch('produk', $data_insert);
+                    if($insert !== FALSE) {
+                        $rows_insert = formatted('currency', $insert);
+                        setAlertResult('success', "{$rows_insert} produk berhasil ditambahkan.");
+
+                    } else {
+                        setAlertResult('danger', 'Terjadi kesalahan, sistem error.');
+                    }
+
+                } else {
+                    setAlertResult('danger', 'Ups, proses upload file gagal.');
+                }
+
+            } else {
+                setAlertResult('danger', 'Ups, anda tidak mengirimkan file apapun untuk diimport.');
+            }
+
+        } else {
+            $this->render_view('admin/produk/import', [
+                'pageTitle' => 'Import Data Produk'
+            ]);
+        }
+    }
+
+    function export()
+    {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $post_jumlah = filter($this->input->post('jumlah', TRUE));
+            $post_order_by = filter($this->input->post('order_by', TRUE));
+
+            if($post_jumlah <= 0) {
+                setAlertResult('danger', 'Ups, jumlah data minimal ialah 1 data');
+            } else if($post_jumlah > 100) {
+                setAlertResult('danger', 'Ups, jumlah data maksimal ialah 100 data');
+
+            } else {
+                $data_produk = $this->Main_model->get_rows('produk', [
+                    'select' => "id, nama, JSON_UNQUOTE(JSON_EXTRACT(harga, '$.beli')) AS harga_beli, JSON_UNQUOTE(JSON_EXTRACT(harga, '$.jual')) AS harga_jual, stok",
+                    'order_by' => ['id', $post_order_by],
+                    'limit' => [$post_jumlah]
+                ]);
+                $data_produk = array_map('array_values', $data_produk);
+                array_unshift($data_produk, ['id', 'nama', 'harga_beli', 'harga_jual', 'stok']);
+
+                $this->load->library('Excel_Reader');
+                $export = $this->excel_reader->write('Data Produk', $data_produk, [
+                    'A' => 15,
+                    'B' => 30,
+                    'C' => 20,
+                    'D' => 20,
+                    'E' => 15
+                ]);
+
+                header("Content-Disposition: attachment; filename=\"Data Produk.xlsx\"");
+                echo $export;
+            }
+
+        } else {
+            $this->render_view('admin/produk/export', [
+                'pageTitle' => 'Export Data Produk'
+            ]);
+        }
+    }
+
     function tambah()
     {
         if($_SERVER['REQUEST_METHOD'] == 'POST') {

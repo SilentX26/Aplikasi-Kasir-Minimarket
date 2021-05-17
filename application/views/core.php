@@ -182,7 +182,7 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $user->data->nama_lengkap ?></span>
-                                    <img class="img-profile rounded-circle" src="<?= base_url("assets/img/akun/{$user->data->foto_profile}") ?>">
+                                    <img class="img-profile rounded-circle" src="<?= (!empty($user->data->foto_profile)) ? base_url("assets/img/akun/{$user->data->foto_profile}") : base_url("assets/img/{$webConfig->icon}") ?>">
                                 </a>
                                 <!-- Dropdown - User Information -->
                                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

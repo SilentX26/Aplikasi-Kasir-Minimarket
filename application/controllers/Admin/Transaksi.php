@@ -10,6 +10,66 @@ class Transaksi extends MY_Controller
             redirect('error/403');
     }
 
+    function export()
+    {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $post_jumlah = filter($this->input->post('jumlah', TRUE));
+            $post_order_by = filter($this->input->post('order_by', TRUE));
+
+            if($post_jumlah <= 0) {
+                setAlertResult('danger', 'Ups, jumlah data minimal ialah 1 data');
+            } else if($post_jumlah > 100) {
+                setAlertResult('danger', 'Ups, jumlah data maksimal ialah 100 data');
+
+            } else {
+                $data_transaksi = $this->Main_model->get_rows('transaksi', [
+                    'order_by' => ['id', $post_order_by],
+                    'limit' => [$post_jumlah]
+                ]);
+                foreach($data_transaksi as $key => $value) {
+                    $value['data'] = json_decode($value['data'], TRUE);
+                    $value['total'] = json_decode($value['total'], TRUE);
+
+                    $data_transaksi[$key] = [
+                        0 => $value['id'],
+                        1 => $value['username'],
+                        2 => '',
+                        3 => 'Rp ' . formatted('currency', $value['total']['harga']),
+                        4 => 'Rp ' . formatted('currency', $value['total']['pajak']),
+                        5 => 'Rp ' . formatted('currency', $value['total']['bayar']),
+                        6 => 'Rp ' . formatted('currency', $value['total']['laba']),
+                        7 => formatted('datetime', $value['tanggal'])
+                    ];
+
+                    foreach($value['data'] as $key_data => $value_data) {
+                        $jumlah = formatted('currency', $value_data['jumlah']);
+                        $data_transaksi[$key][2] .= "{$value_data['nama']}: {$jumlah}\n";
+                    }
+                }
+
+                array_unshift($data_transaksi, ['id', 'username', 'data', 'total_harga', 'total_pajak', 'total_bayar', 'total_laba', 'tanggal']);
+                $this->load->library('Excel_Reader');
+                $export = $this->excel_reader->write('Data Transaksi', $data_transaksi, [
+                    'B' => 15,
+                    'C' => 50,
+                    'D' => 20,
+                    'E' => 20,
+                    'F' => 20,
+                    'G' => 20,
+                    'H' => 25
+                ]);
+
+                header("Content-Disposition: attachment; filename=\"Data Transaksi.xlsx\"");
+                echo $export;
+            }
+
+        } else {
+            $this->render_view('admin/transaksi/export', [
+                'pageTitle' => 'Export Data Transaksi'
+            ]);
+        }
+    }
+
     function hapus()
     {
         if($_SERVER['REQUEST_METHOD'] != 'POST')

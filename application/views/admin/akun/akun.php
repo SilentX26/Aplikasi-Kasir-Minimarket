@@ -44,7 +44,7 @@
                     <a class="dropdown-item" href="<?= base_url('admin/akun/tambah') ?>">
                         <i class="fas fa-plus text-primary mr-1"></i> Tambah
                     </a>
-                    <a class="dropdown-item" href="<?= base_url('admin/akunexport') ?>">
+                    <a class="dropdown-item" href="<?= base_url('admin/akun/export') ?>">
                         <i class="fas fa-file-export text-success mr-1"></i> Export
                     </a>
                     <a class="dropdown-item" href="<?= base_url('admin/akun/import') ?>">

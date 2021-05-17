@@ -11,7 +11,7 @@ class Auth extends MY_Controller
     function test()
     {
         $this->load->library('Excel_Reader');
-        var_dump( $this->excel_reader->write('yes.xlsx', [['a', 'b', 'c', 'd']], ['A' => 10, 'B' => 20, 'C' => 30, 'D' => 40]) );
+        var_dump( $this->excel_reader->test() );
     }
 
     function pengaturan()
