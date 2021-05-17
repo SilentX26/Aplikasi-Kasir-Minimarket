@@ -5,6 +5,7 @@ Aplikasi dapat berfungsi untuk memantau ketersediaan stok barang, perhitungan to
 Aplikasi ini tersedia secara open source, artinya anda dapat mengambil dan mengembangkan aplikasi ini sesuka anda.
 
 **Apa saja komponen yang digunakan?**
+    
     - Sb Admin 2 (ver 4.1.3): Admin Template
     - Bootstrap (ver 4.5.3): CSS Framework
     - Bootstrap Notify (ver 3.1.5): Notify framework
