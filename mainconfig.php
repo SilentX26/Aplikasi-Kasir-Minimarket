@@ -13,5 +13,5 @@
 
 date_default_timezone_set('Asia/Jakarta');
 
-$_SERVER['CI_ENV'] = 'development'; // ci env: development, testing, production
+$_SERVER['CI_ENV'] = 'production'; // ci env: development, testing, production
 $config['silentX']['encryption_key'] = 'silentX'; // encryption key
